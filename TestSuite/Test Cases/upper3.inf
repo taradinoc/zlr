@@ -1,0 +1,27 @@
+Switches "v3~S";
+
+Global location;
+Global score;
+Global turns;
+
+Object theroom "The Room";
+
+Array buffer string 100;
+Array parse -> 42;
+
+[ Main;
+        location = theroom;
+        score = 69;
+        turns = 105;
+
+        @split_window 5;
+        @set_window 1;
+        print "1^2^3^4^5";
+
+        @set_window 0;
+        print "> ";
+
+        buffer->0 = 100;
+        parse->0 = 10;
+        read buffer parse;
+];

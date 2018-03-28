@@ -7,7 +7,7 @@ using ZLR.VM;
 
 namespace ZLR.Interfaces.SystemConsole
 {
-    internal class ConsoleIO : IZMachineIO
+    public class ConsoleIO : IZMachineIO
     {
         private readonly string fileBase;
         private string suppliedCommandFile;

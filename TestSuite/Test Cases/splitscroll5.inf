@@ -1,0 +1,30 @@
+Switches "v5~S";
+
+Global location;
+Global score;
+Global turns;
+
+Object theroom "The Room";
+
+Array buffer string 100;
+Array parse -> 42;
+
+[ Main  i;
+        @split_window 10;
+        @set_window 1;
+        for (i=1: i<=10: i++) {
+                print "Upper ", i, "^";
+        }
+        @set_window 0;
+        for (i=1: i<=20: i++) {
+                print "Lower ", i, "^";
+        }
+
+        location = theroom;
+        score = 69;
+        turns = 105;
+        buffer->0 = 100;
+        parse->0 = 10;
+        read buffer parse;
+
+];

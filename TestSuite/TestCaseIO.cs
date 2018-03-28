@@ -6,9 +6,27 @@ using System.IO;
 
 namespace TestSuite
 {
-    abstract class TestCaseIO
+    interface ITestCaseIO : IZMachineIO
     {
-        protected readonly StringBuilder outputBuffer = new StringBuilder();
+        void BeforeRunning();
+        string CollectOutput();
+        void AfterRunning();
+    }
+
+    class ReplayIO : ITestCaseIO
+    {
+        private readonly Queue<string> inputBuffer = new Queue<string>();
+        private readonly string inputFile;
+        private readonly StringBuilder outputBuffer = new StringBuilder();
+
+        public ReplayIO(string prevInputFile)
+        {
+            this.inputFile = prevInputFile;
+        }
+
+        public void BeforeRunning()
+        {
+        }
 
         public string CollectOutput()
         {
@@ -16,16 +34,9 @@ namespace TestSuite
             outputBuffer.Length = 0;
             return result;
         }
-    }
 
-    class ReplayIO : TestCaseIO, IZMachineIO
-    {
-        private readonly Queue<string> inputBuffer = new Queue<string>();
-        private readonly string inputFile;
-
-        public ReplayIO(string prevInputFile)
+        public void AfterRunning()
         {
-            this.inputFile = prevInputFile;
         }
 
         #region Z-machine I/O implementation
@@ -279,15 +290,31 @@ namespace TestSuite
         #endregion
     }
 
-    class RecordingIO : TestCaseIO, IZMachineIO
+    class RecordingIO : ITestCaseIO
     {
         private readonly string inputFile;
+        private readonly StringBuilder outputBuffer = new StringBuilder();
 
         public RecordingIO(string newInputFile)
         {
             this.inputFile = newInputFile;
         }
 
+        public void BeforeRunning()
+        {
+        }
+
+        public string CollectOutput()
+        {
+            string result = outputBuffer.ToString();
+            outputBuffer.Length = 0;
+            return result;
+        }
+
+        public void AfterRunning()
+        {
+        }
+        
         #region IZMachineIO Members
 
         string IZMachineIO.ReadLine(string initial, int time, TimedInputCallback callback, byte[] terminatingKeys, out byte terminator)

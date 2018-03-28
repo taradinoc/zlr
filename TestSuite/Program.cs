@@ -97,9 +97,8 @@ namespace TestSuite
                 {
                     using (Stream zcode = selected.GetZCode())
                     {
-                        RecordingIO io = new RecordingIO(selected.InputFile);
+                        var io = selected.GetParams().GetIO(selected.InputFile, true);
                         ZMachine zm = new ZMachine(zcode, io);
-                        zm.PredictableRandom = true;
                         zm.WritingCommandsToFile = true;
 
                         string output = RunAndCollectOutput(zm, io);
@@ -113,15 +112,26 @@ namespace TestSuite
             }
         }
 
-        private static string RunAndCollectOutput(ZMachine zm, TestCaseIO io)
+        private static string RunAndCollectOutput(ZMachine zm, ITestCaseIO io)
         {
             string output = null;
 
             try
             {
                 zm.PredictableRandom = true;
-                zm.Run();
-                output = io.CollectOutput();
+                io.BeforeRunning();
+                try
+                {
+                    zm.Run();
+                    output = io.CollectOutput();
+                }
+                finally
+                {
+                    if (output == null)
+                        output = io.CollectOutput();
+
+                    io.AfterRunning();
+                }
             }
             catch (Exception ex)
             {
@@ -163,10 +173,8 @@ namespace TestSuite
                         {
                             using (Stream zcode = test.GetZCode())
                             {
-                                ReplayIO io = new ReplayIO(test.InputFile);
+                                var io = test.GetParams().GetIO(test.InputFile, false);
                                 ZMachine zm = new ZMachine(zcode, io);
-
-                                zm.PredictableRandom = true;
                                 zm.ReadingCommandsFromFile = true;
 
                                 string output = RunAndCollectOutput(zm, io);

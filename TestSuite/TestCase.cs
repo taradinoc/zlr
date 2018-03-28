@@ -11,6 +11,7 @@ namespace TestSuite
         private const string INPUT_SUFFIX = ".input.txt";
         private const string OUTPUT_SUFFIX = ".output.txt";
         private const string FAILURE_SUFFIX = ".failed-output.txt";
+        private const string PARAMS_SUFFIX = ".params.txt";
 
         protected readonly string testFile;
 
@@ -39,6 +40,16 @@ namespace TestSuite
         public string FailureFile
         {
             get { return testFile + FAILURE_SUFFIX; }
+        }
+
+        public TestParams GetParams()
+        {
+            var paramsFile = testFile + PARAMS_SUFFIX;
+
+            if (File.Exists(paramsFile))
+                return new TestParams(paramsFile);
+            else
+                return TestParams.Default;
         }
 
         public virtual void CleanUp()

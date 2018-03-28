@@ -65,8 +65,14 @@
     </Compile>
     <Compile Include="TestCase.cs" />
     <Compile Include="TestCaseIO.cs" />
+    <Compile Include="TestConsoleIO.cs" />
+    <Compile Include="TestParams.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleZLR\ConsoleZLR.csproj">
+      <Project>{0ff5ad11-1849-4bdf-a2de-d97586ee95b0}</Project>
+      <Name>ConsoleZLR</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZLR\ZLR.VM.csproj">
       <Project>{75CC483D-D28E-49EE-AB8F-F77CC3F58BFA}</Project>
       <Name>ZLR.VM</Name>
