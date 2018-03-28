@@ -47,6 +47,17 @@ namespace ZLR.VM
         public short Range { get; private set; }
     }
 
+    public class IllegalOpcodeException : Exception
+    {
+        public int Address { get; private set; }
+
+        public IllegalOpcodeException(string message, int address)
+            : base(string.Format("{0} at ${1:x5}", message, address))
+        {
+            this.Address = address;
+        }
+    }
+
     partial class ZMachine
     {
         public static readonly string ZLR_VERSION = "0.07";
@@ -878,7 +889,7 @@ namespace ZLR.VM
                     break;
 
                 default:
-                    throw new Exception("BUG:BADFORM");
+                    throw new NotImplementedException("BUG:BADFORM");
             }
 
             // determine operand types and actual operand count
@@ -922,7 +933,7 @@ namespace ZLR.VM
                     break;
 
                 default:
-                    throw new Exception("BUG:BADFORM");
+                    throw new NotImplementedException("BUG:BADFORM");
             }
 
             // read operands
@@ -945,10 +956,7 @@ namespace ZLR.VM
 
                     case OperandType.Omitted:
                         // shouldn't get here!
-                        Console.WriteLine("[BUG:OMITTED]");
-                        SystemDebugger.Break();
-                        argv[i] = 0;
-                        break;
+                        throw new NotImplementedException("BUG:OMITTED");
                 }
             }
 
@@ -960,10 +968,9 @@ namespace ZLR.VM
                 // these are unrecognized custom opcodes, so the best we can do
                 // is skip the opcode and its operands and hope it won't branch or store.
                 if (count != OpCount.Ext || opnum < 29)
-                    throw new NotImplementedException(string.Format(
-                        "Opcode {0} at ${1:x5}",
-                        FormatOpcode(count, form, opnum),
-                        opc));
+                    throw new IllegalOpcodeException(
+                        string.Format("Opcode {0}", FormatOpcode(count, form, opnum)),
+                        opc);
             }
 
 #if TRACING

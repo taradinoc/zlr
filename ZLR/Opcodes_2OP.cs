@@ -116,7 +116,7 @@ namespace ZLR.VM
             Branch(il, OpCodes.Bgt, OpCodes.Ble);
         }
 
-        [Opcode(OpCount.Two, 6, false, true, false)]
+        [Opcode(OpCount.Two, 6, false, true, false, Op1 = OperandMeaning.Object, Op2 = OperandMeaning.Object)]
         private void op_jin(ILGenerator il)
         {
             MethodInfo getParentMI = typeof(ZMachine).GetMethod("GetObjectParent", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -128,7 +128,7 @@ namespace ZLR.VM
             Branch(il, OpCodes.Beq, OpCodes.Bne_Un);
         }
 
-        [Opcode(OpCount.Two, 7, false, true, false)]
+        [Opcode(OpCount.Two, 7, false, true, false, Op1 = OperandMeaning.BitField, Op2 = OperandMeaning.BitField)]
         private void op_test(ILGenerator il)
         {
             LoadOperand(il, 0);
@@ -140,19 +140,19 @@ namespace ZLR.VM
             Branch(il, OpCodes.Beq, OpCodes.Bne_Un);
         }
 
-        [Opcode(OpCount.Two, 8, true)]
+        [Opcode(OpCount.Two, 8, true, Op1 = OperandMeaning.BitField, Op2 = OperandMeaning.BitField, Result = OperandMeaning.BitField)]
         private void op_or(ILGenerator il)
         {
             BinaryOperation(il, OpCodes.Or);
         }
 
-        [Opcode(OpCount.Two, 9, true)]
+        [Opcode(OpCount.Two, 9, true, Op1 = OperandMeaning.BitField, Op2 = OperandMeaning.BitField, Result = OperandMeaning.BitField)]
         private void op_and(ILGenerator il)
         {
             BinaryOperation(il, OpCodes.And);
         }
 
-        [Opcode(OpCount.Two, 10, false, true, false)]
+        [Opcode(OpCount.Two, 10, false, true, false, Op1 = OperandMeaning.Object, Op2 = OperandMeaning.Attribute)]
         private void op_test_attr(ILGenerator il)
         {
             MethodInfo getAttrMI = typeof(ZMachine).GetMethod("GetObjectAttr", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -164,7 +164,7 @@ namespace ZLR.VM
             Branch(il, OpCodes.Brtrue, OpCodes.Brfalse);
         }
 
-        [Opcode(OpCount.Two, 11)]
+        [Opcode(OpCount.Two, 11, Op1 = OperandMeaning.Object, Op2 = OperandMeaning.Attribute)]
         private void op_set_attr(ILGenerator il)
         {
             MethodInfo setAttrMI = typeof(ZMachine).GetMethod("SetObjectAttr", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -176,7 +176,7 @@ namespace ZLR.VM
             il.Emit(OpCodes.Call, setAttrMI);
         }
 
-        [Opcode(OpCount.Two, 12)]
+        [Opcode(OpCount.Two, 12, Op1 = OperandMeaning.Object, Op2 = OperandMeaning.Attribute)]
         private void op_clear_attr(ILGenerator il)
         {
             MethodInfo setAttrMI = typeof(ZMachine).GetMethod("SetObjectAttr", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -199,7 +199,7 @@ namespace ZLR.VM
             il.Emit(OpCodes.Call, impl);
         }
 
-        [Opcode(OpCount.Two, 14)]
+        [Opcode(OpCount.Two, 14, Op1 = OperandMeaning.Object, Op2 = OperandMeaning.Attribute)]
         private void op_insert_obj(ILGenerator il)
         {
             MethodInfo impl = typeof(ZMachine).GetMethod("InsertObject", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -210,7 +210,7 @@ namespace ZLR.VM
             il.Emit(OpCodes.Call, impl);
         }
 
-        [Opcode(OpCount.Two, 15, true)]
+        [Opcode(OpCount.Two, 15, true, Op1 = )]
         private void op_loadw(ILGenerator il)
         {
             MethodInfo getWordMI = typeof(ZMachine).GetMethod("GetWord", BindingFlags.NonPublic | BindingFlags.Instance);

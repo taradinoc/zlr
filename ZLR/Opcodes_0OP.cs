@@ -70,7 +70,7 @@ namespace ZLR.VM
             il.Emit(OpCodes.Pop);
         }
 
-        [Opcode(OpCount.Zero, 185, true, MinVersion = 5)]
+        [Opcode(OpCount.Zero, 185, true, MinVersion = 5, Result = OperandMeaning.CatchToken)]
         private void op_catch(ILGenerator il)
         {
             FieldInfo callStackFI = typeof(ZMachine).GetField("callStack", BindingFlags.NonPublic | BindingFlags.Instance);

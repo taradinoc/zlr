@@ -17,6 +17,46 @@ namespace ZLR.VM
         Omitted = 3
     }
 
+    [Flags]
+    public enum OperandMeaning
+    {
+        TypeMask = 0x00ff,
+        Unknown=0,
+        BitField,
+        Object,
+        Attribute,
+        Property,
+        RoutinePacked,
+        StringPacked,
+        Color,
+        JumpOffset,
+        Variable,
+        Pointer,
+        Zscii,
+        Unicode,
+        Window,
+        OutputStream,
+        InputStream,
+        TextStyle,
+        ScanTableForm,
+        SoundEffect,
+        CatchToken,
+
+        PointerMask = 0x0f00,
+        UnknownPointer = 0x0000,
+        ZsciiPointer = 0x0100,
+        ReadBufferPointer = 0x0200,
+        ParseBufferPointer = 0x0300,
+        DictionaryPointer = 0x0400,
+        TextPointer = 0x0500,
+        PropertyPointer = 0x0600,
+
+        DirectionMask = 0x3000,
+        Read = 0x0000,
+        Write = 0x1000,
+        ReadWrite = 0x2000,
+    }
+
     internal delegate void OpcodeCompiler(Opcode thisptr, ILGenerator il);
 
     internal struct OpcodeInfo
@@ -689,54 +729,40 @@ namespace ZLR.VM
         public OpcodeAttribute(OpCount count, byte opnum,
             bool store, bool branch, bool text)
         {
-            _count = count;
-            _opnum = opnum;
-            _store = store;
-            _branch = branch;
-            _text = text;
+            MinVersion = 1;
+            MaxVersion = 8;
         }
 
-        private OpCount _count;
-        private byte _opnum;
-        private bool _store, _branch, _text;
-        private bool _noReturn, _indirect;
-        private byte _minVer = 1, _maxVer = 8;
-        private string _alias = null;
+        public OpCount OpCount { get; private set; }
+        public byte Number { get; private set; }
+        public bool Store { get; private set; }
+        public bool Branch { get; private set; }
+        public bool Text { get; private set; }
 
-        public OpCount OpCount { get { return _count; } }
-        public byte Number { get { return _opnum; } }
-        public bool Store { get { return _store; } }
-        public bool Branch { get { return _branch; } }
-        public bool Text { get { return _text; } }
+        public bool Terminates { get; set; }
+        public byte MinVersion { get; set; }
+        public byte MaxVersion { get; set; }
+        public string Alias { get; set; }
 
-        public bool Terminates
-        {
-            get { return _noReturn; }
-            set { _noReturn = value; }
-        }
-
+        private bool _indirectVar;
         public bool IndirectVar
         {
-            get { return _indirect; }
-            set { _indirect = value; }
+            get
+            {
+                return _indirectVar;
+            }
+            set
+            {
+                _indirectVar = value;
+                if (value)
+                    Op1 = OperandMeaning.Variable;
+            }
         }
 
-        public byte MinVersion
-        {
-            get { return _minVer; }
-            set { _minVer = value; }
-        }
-
-        public byte MaxVersion
-        {
-            get { return _maxVer; }
-            set { _maxVer = value; }
-        }
-
-        public string Alias
-        {
-            get { return _alias; }
-            set { _alias = value; }
-        }
+        public OperandMeaning Op1 { get; set; }
+        public OperandMeaning Op2 { get; set; }
+        public OperandMeaning Op3 { get; set; }
+        public OperandMeaning Op4 { get; set; }
+        public OperandMeaning Result { get; set; }
     }
 }

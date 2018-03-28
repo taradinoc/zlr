@@ -14,7 +14,7 @@ namespace ZLR.VM
             Branch(il, OpCodes.Brfalse, OpCodes.Brtrue);
         }
 
-        [Opcode(OpCount.One, 129, true, true, false)]
+        [Opcode(OpCount.One, 129, true, true, false, Op1 = OperandMeaning.Object, Result = OperandMeaning.Object)]
         private void op_get_sibling(ILGenerator il)
         {
             MethodInfo getSiblingMI = typeof(ZMachine).GetMethod("GetObjectSibling", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -27,8 +27,8 @@ namespace ZLR.VM
             StoreResult(il);
             Branch(il, OpCodes.Brtrue, OpCodes.Brfalse);
         }
-        
-        [Opcode(OpCount.One, 130, true, true, false)]
+
+        [Opcode(OpCount.One, 130, true, true, false, Op1 = OperandMeaning.Object, Result = OperandMeaning.Object)]
         private void op_get_child(ILGenerator il)
         {
             MethodInfo getChildMI = typeof(ZMachine).GetMethod("GetObjectChild", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -42,7 +42,7 @@ namespace ZLR.VM
             Branch(il, OpCodes.Brtrue, OpCodes.Brfalse);
         }
 
-        [Opcode(OpCount.One, 131, true)]
+        [Opcode(OpCount.One, 131, true, Op1 = OperandMeaning.Object, Result = OperandMeaning.Object)]
         private void op_get_parent(ILGenerator il)
         {
             MethodInfo getParentMI = typeof(ZMachine).GetMethod("GetObjectParent", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -53,7 +53,7 @@ namespace ZLR.VM
             StoreResult(il);
         }
 
-        [Opcode(OpCount.One, 132, true)]
+        [Opcode(OpCount.One, 132, true, Op1 = OperandMeaning.Pointer | OperandMeaning.PropertyPointer | OperandMeaning.Read)]
         private void op_get_prop_len(ILGenerator il)
         {
             MethodInfo impl = typeof(ZMachine).GetMethod("GetPropLength", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -88,7 +88,7 @@ namespace ZLR.VM
             il.Emit(OpCodes.Pop);
         }
 
-        [Opcode(OpCount.One, 135)]
+        [Opcode(OpCount.One, 135, Op1 = OperandMeaning.Pointer | OperandMeaning.TextPointer)]
         private void op_print_addr(ILGenerator il)
         {
             MethodInfo decodeStringMI = typeof(ZMachine).GetMethod("DecodeString", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -102,13 +102,13 @@ namespace ZLR.VM
             il.Emit(OpCodes.Call, printStringMI);
         }
 
-        [Opcode(OpCount.One, 136, true, Terminates = true, MinVersion = 4)]
+        [Opcode(OpCount.One, 136, true, Terminates = true, MinVersion = 4, Op1 = OperandMeaning.RoutinePacked)]
         private void op_call_1s(ILGenerator il)
         {
             EnterFunction(il, true);
         }
 
-        [Opcode(OpCount.One, 137)]
+        [Opcode(OpCount.One, 137, Op1 = OperandMeaning.Object)]
         private void op_remove_obj(ILGenerator il)
         {
             MethodInfo impl = typeof(ZMachine).GetMethod("InsertObject", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -119,7 +119,7 @@ namespace ZLR.VM
             il.Emit(OpCodes.Call, impl);
         }
 
-        [Opcode(OpCount.One, 138)]
+        [Opcode(OpCount.One, 138, Op1 = OperandMeaning.Object)]
         private void op_print_obj(ILGenerator il)
         {
             MethodInfo getNameMI = typeof(ZMachine).GetMethod("GetObjectName", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -139,7 +139,7 @@ namespace ZLR.VM
             LeaveFunction(il);
         }
 
-        [Opcode(OpCount.One, 140, Terminates = true)]
+        [Opcode(OpCount.One, 140, Terminates = true, Op1 = OperandMeaning.JumpOffset)]
         private void op_jump(ILGenerator il)
         {
             FieldInfo pcFI = typeof(ZMachine).GetField("pc", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -152,7 +152,7 @@ namespace ZLR.VM
             compiling = false;
         }
 
-        [Opcode(OpCount.One, 141)]
+        [Opcode(OpCount.One, 141, Op1 = OperandMeaning.StringPacked)]
         private void op_print_paddr(ILGenerator il)
         {
             MethodInfo decodeStringMI = typeof(ZMachine).GetMethod("DecodeString", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -180,7 +180,7 @@ namespace ZLR.VM
             StoreResult(il);
         }
 
-        [Opcode(OpCount.One, 143, Terminates = true, MinVersion = 5)]
+        [Opcode(OpCount.One, 143, Terminates = true, MinVersion = 5, Op1 = OperandMeaning.RoutinePacked)]
         private void op_call_1n(ILGenerator il)
         {
             EnterFunction(il, false);

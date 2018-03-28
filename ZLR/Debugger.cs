@@ -36,10 +36,16 @@ namespace ZLR.VM.Debugging
         ICallFrame[] GetCallFrames();
         int CurrentPC { get; }
         string Disassemble(int address);
+        IEnumerable<KeyValuePair<int, string>> DisassembleFrom(int address);
 
         int StackDepth { get; }
         void StackPush(short value);
         short StackPop();
+        /// <summary>
+        /// Returns the contents of the stack in order, starting with the topmost value.
+        /// </summary>
+        /// <returns>An array containing all values from the evaluation stack (from all frames).</returns>
+        short[] GetStack();
 
         int UnpackAddress(short packedAddress, bool forString);
         short PackAddress(int address, bool forString);
@@ -235,7 +241,7 @@ namespace ZLR.VM
                 get { return zm.pc; }
             }
 
-            public string Disassemble(int address)
+            private string Disassemble(int address, out int length)
             {
                 int opc = zm.pc;
                 try
@@ -244,7 +250,17 @@ namespace ZLR.VM
                     OperandType[] types = new OperandType[8];
                     short[] argv = new short[8];
 
-                    Opcode opcode = zm.DecodeOneOp(types, argv);
+                    Opcode opcode;
+                    try
+                    {
+                        opcode = zm.DecodeOneOp(types, argv);
+                        length = zm.pc - address;
+                    }
+                    catch (IllegalOpcodeException)
+                    {
+                        length = 1;
+                        return string.Format("<illegal opcode ${0:x2}>", zm.GetByte(address));
+                    }
 
                     RoutineInfo rtn;
                     if (zm.debugFile == null)
@@ -271,6 +287,27 @@ namespace ZLR.VM
                 }
             }
 
+            public string Disassemble(int address)
+            {
+                int dummy;
+                return Disassemble(address, out dummy);
+            }
+
+            public IEnumerable<KeyValuePair<int, string>> DisassembleFrom(int address)
+            {
+                var routineInfo = zm.debugFile != null ? zm.debugFile.FindRoutine(address) : null;
+
+                while (address < zm.zmem.Length)
+                {
+                    int length;
+                    yield return new KeyValuePair<int, string>(address, Disassemble(address, out length));
+                    address += length;
+
+                    if (routineInfo != null && address >= routineInfo.CodeStart + routineInfo.CodeLength)
+                        break;
+                }
+            }
+
             public int StackDepth
             {
                 get { return zm.stack.Count; }
@@ -284,6 +321,11 @@ namespace ZLR.VM
             public short StackPop()
             {
                 return zm.stack.Pop();
+            }
+
+            public short[] GetStack()
+            {
+                return zm.stack.ToArray();
             }
 
             public int UnpackAddress(short packedAddress, bool forString)
