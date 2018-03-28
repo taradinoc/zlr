@@ -187,13 +187,24 @@ namespace ZLR.VM
         [Opcode(OpCount.Var, 235, MinVersion = 3)]
         private void op_set_window(ILGenerator il)
         {
-            FieldInfo ioFI = typeof(ZMachine).GetField("io", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo impl = typeof(IZMachineIO).GetMethod("SelectWindow");
+            if (zm.ZVersion == 3)
+            {
+                MethodInfo impl = typeof(ZMachine).GetMethod("SelectWindowImplV3", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ldfld, ioFI);
-            LoadOperand(il, 0);
-            il.Emit(OpCodes.Call, impl);
+                il.Emit(OpCodes.Ldarg_0);
+                LoadOperand(il, 0);
+                il.Emit(OpCodes.Call, impl);
+            }
+            else
+            {
+                FieldInfo ioFI = typeof(ZMachine).GetField("io", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo impl = typeof(IZMachineIO).GetMethod("SelectWindow");
+
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldfld, ioFI);
+                LoadOperand(il, 0);
+                il.Emit(OpCodes.Call, impl);
+            }
         }
 
         [Opcode(OpCount.Var, 236, true, Terminates = true, MinVersion = 4)]

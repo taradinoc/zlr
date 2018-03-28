@@ -516,6 +516,17 @@ namespace ZLR.VM
                 io.SelectWindow(0);
             }
         }
+
+        private void SelectWindowImplV3(short num)
+        {
+            io.SelectWindow(num);
+
+            if (num == 1)
+            {
+                io.EraseWindow(1);
+                io.MoveCursor(1, 2);
+            }
+        }
 #pragma warning restore 0169
     }
 }
