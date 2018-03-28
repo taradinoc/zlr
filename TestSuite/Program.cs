@@ -101,6 +101,7 @@ namespace TestSuite
                         ZMachine zm = new ZMachine(zcode, io);
                         zm.PredictableRandom = true;
                         zm.WritingCommandsToFile = true;
+                        zm.RandomRolled += (sender, e) => io.PutString(string.Format("[random({0}) -> {1}]", e.Range, e.Value));
 
                         string output = RunAndCollectOutput(zm, io);
                         File.WriteAllText(selected.OutputFile, output);
@@ -168,6 +169,7 @@ namespace TestSuite
 
                                 zm.PredictableRandom = true;
                                 zm.ReadingCommandsFromFile = true;
+                                zm.RandomRolled += (sender, e) => io.PutString(string.Format("[random({0}) -> {1}]", e.Range, e.Value));
 
                                 string output = RunAndCollectOutput(zm, io);
                                 string expectedOutput = File.ReadAllText(test.OutputFile);
