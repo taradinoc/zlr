@@ -622,6 +622,8 @@ namespace ZLR.Interfaces.SystemConsole
                 reverse = false;
                 SetConsoleColors();
 
+                var (oldLeft, oldTop) = Console.GetCursorPosition();
+
                 if (num < 1)
                 {
                     buffer.Clear();
@@ -630,18 +632,25 @@ namespace ZLR.Interfaces.SystemConsole
 
                 if (num < 0)
                 {
-                    // -1 = erase all and unsplit, -2 = erase all but keep split
+                    // -1 = erase all and unsplit, moving the cursor to the top l, -2 = erase all but keep split and cursor position
                     // both select the lower window and move its cursor to the top left
                     Console.Clear();
 
                     if (num == -1)
+                    {
                         split = 0;
+                        upper = false;
+                        xlower = 1;
+                        ylower = scrollFromBottom ? Console.WindowHeight - split : 1;
+                        RestoreCursorPos();
+                        return;
+                    }
 
-                    upper = false;
-                    xlower = 1;
-                    ylower = scrollFromBottom ? Console.WindowHeight - split : 1;
-                    Console.SetCursorPosition(xlower - 1 + Console.WindowLeft, ylower - 1 + split + Console.WindowTop);
-                    return;
+                    if (num == -2)
+                    {
+                        Console.SetCursorPosition(oldLeft, oldTop);
+                        return;
+                    }
                 }
 
                 SaveCursorPos();
