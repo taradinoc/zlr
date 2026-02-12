@@ -3,6 +3,8 @@ using System.Text;
 using System.IO;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ZLR.VM
 {
@@ -702,6 +704,58 @@ namespace ZLR.VM
         {
             for (var i = 0; i < count; i++)
                 stack.Pop();
+        }
+
+        private static readonly (short zcolor, short trueColor)[] StandardColorEquivalences =
+        {
+            (2, 0x0000),
+            (3, 0x001D),
+            (4, 0x0340),
+            (5, 0x03BD),
+            (6, 0x59A0),
+            (7, 0x7C1F),
+            (8, 0x77A0),
+            (9, 0x7FFF),
+            (10, 0x5AD6),
+            (11, 0x4631),
+            (12, 0x2D6B),
+        };
+
+        private static short TrueColorToZColor(short trueColor)
+        {
+            if (trueColor == -1)
+                return 1;   // default
+            
+            if (trueColor == -2)
+                return 0;   // no change
+
+            int ErrorFunction((short zcolor, short trueColor) pair)
+            {
+                var target = pair.trueColor;
+                var candidate = trueColor;
+
+                var redError = Math.Abs((target & 0x1F) - (candidate & 0x1F));
+                var greenError = Math.Abs(((target >> 5) & 0x1F) - ((candidate >> 5) & 0x1F));
+                var blueError = Math.Abs(((target >> 10) & 0x1F) - ((candidate >> 10) & 0x1F));
+
+                return redError * redError + greenError * greenError + blueError * blueError;
+            }
+
+            return StandardColorEquivalences.OrderBy(ErrorFunction).First().zcolor;
+        }
+
+        internal void SetTrueColorsImpl(short fg, short bg)
+        {
+            if (io is ISupportTrueColors trueIO)
+            {
+                trueIO.SetTrueColors(fg, bg);
+                return;
+            }
+
+            // if the I/O module doesn't support true colors, forward the request to SetColors,
+            // using the standard color equivalences defined in the Z-Machine spec
+
+            io.SetColors(TrueColorToZColor(fg), TrueColorToZColor(bg));
         }
 #pragma warning restore 0169
     }

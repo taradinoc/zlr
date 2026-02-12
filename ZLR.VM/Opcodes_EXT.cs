@@ -245,6 +245,19 @@ namespace ZLR.VM
             StoreResult(il);
         }
 
+        [Opcode(OpCount.Ext, 13, MinVersion = 5)]
+        private void op_set_true_colour([NotNull] ILGenerator il)
+        {
+            var ioFI = ZMachine.GetFieldInfo(nameof(ZMachine.io));
+            var impl = ZMachine.GetMethodInfo(nameof(ZMachine.SetTrueColorsImpl));
+            System.Diagnostics.Debug.Assert(impl != null);
+
+            il.Emit(OpCodes.Ldarg_0);
+            LoadOperand(il, 0);
+            LoadOperand(il, 1);
+            il.Emit(OpCodes.Call, impl);
+        }
+
         [Opcode(OpCount.Ext, 21, MinVersion = 6, MaxVersion = 6)]
         private void op_pop_stack([NotNull] ILGenerator il)
         {

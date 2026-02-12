@@ -633,6 +633,26 @@ namespace ZLR.VM
     }
 
     [PublicAPI]
+    public interface ISupportTrueColors
+    {
+        /// <summary>
+        /// Sets the current output colors using 15-bit RGB color.
+        /// </summary>
+        /// <param name="fg">The new foreground RGB color.</param>
+        /// <param name="bg">The new background RGB color.</param>
+        /// <remarks>
+        /// The standrd color equivalences are: color 2 (black) = 0x0000, color 3 (red) = 0x001D,
+        /// color 4 (green) = 0x0340, color 5 (yellow) = 0x03BD, color 6 (blue) = 0x59A0,
+        /// color 7 (magenta) = 0x7C1F, color 8 (cyan) = 0x77A0, color 9 (white) = 0x7FFF,
+        /// color 10 (light grey) = 0x5AD6, color 11 (medium grey) = 0x4631, and
+        /// color 12 (dark grey) = 0x2D6B.
+        /// There are also two special true color values: -2 means "no change" and -1 means
+        /// "return to the default". 
+        /// </remarks>
+        void SetTrueColors(short fg, short bg);
+    }
+
+    [PublicAPI]
     public interface IAsyncZMachineIO : IZMachineIO
     {
         /// <summary>
